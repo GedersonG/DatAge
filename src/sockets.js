@@ -1,16 +1,16 @@
 import Note from "./models/Note";
 
 export default (io) => {
-  io.on('connection', (socket) => {
-    const emitNotes = async() => {
+  io.on("connection", (socket) => {
+    const emitNotes = async () => {
       const notes = await Note.find();
-      
-      io.emit('loadnotes', notes)
-    }
-    emitNotes()
 
-    socket.on('newnote', async (data) =>{
-      const newData = new Note(data)
+      io.emit("server:loadnotes", notes);
+    };
+    emitNotes();
+
+    socket.on("client:newnote", async (data) => {
+      const newData = new Note(data);
       /*
       También sirve -->
       const newData = new Note({
@@ -18,8 +18,8 @@ export default (io) => {
         description: data.descripcion
       })
       */
-     const savedNote = await newData.save()
-     console.log(savedNote);
-    })
+      const savedNote = await newData.save();
+      socket.emit("server:newnote", savedNote);
+    });
   });
 };
