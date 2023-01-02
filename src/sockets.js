@@ -2,6 +2,7 @@ import Note from "./models/Note";
 
 export default (io) => {
   io.on("connection", (socket) => {
+    console.log('New connection --> ', socket.id);
     const emitNotes = async () => {
       const notes = await Note.find();
 
@@ -39,5 +40,13 @@ export default (io) => {
       })
       emitNotes();
     });
+
+    socket.on('chat:message', (data) =>{
+      io.emit('chat:message', data)
+    })
+
+    socket.on('chat:typing', (data) =>{
+      socket.broadcast.emit('chat:typing', data)
+    })
   });
 };
