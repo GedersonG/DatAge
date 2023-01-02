@@ -24,6 +24,7 @@ socket.on("chat:message", function (data) {
   output.innerHTML += `<p class="animate__animated animate__fadeIn">
     <strong>${data.username}: </strong> ${data.message}
     </p>`;
+  message = "";
 });
 
 socket.on("chat:typing", function (data) {
