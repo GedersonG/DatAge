@@ -19,7 +19,25 @@ export default (io) => {
       })
       */
       const savedNote = await newData.save();
-      socket.emit("server:newnote", savedNote);
+      io.emit("server:newnote", savedNote);
+    });
+
+    socket.on("client:deleteNote", async (id) => {
+      await Note.findByIdAndDelete(id);
+      emitNotes();
+    });
+
+    socket.on("client:getNote", async (id) => {
+      const note = await Note.findById(id);
+      io.emit("server:noteselected", note);
+    });
+
+    socket.on("client:updateNote", async (updatedNote) => {
+      await Note.findByIdAndUpdate(updatedNote._id, {
+        title: updatedNote.title,
+        description: updatedNote.description,
+      })
+      emitNotes();
     });
   });
 };
