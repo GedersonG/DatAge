@@ -2,7 +2,7 @@ import Note from "./models/Note";
 
 export default (io) => {
   io.on("connection", (socket) => {
-    console.log('New connection --> ', socket.id);
+    console.log("New connection --> ", socket.id);
     const emitNotes = async () => {
       const notes = await Note.find();
 
@@ -37,16 +37,21 @@ export default (io) => {
       await Note.findByIdAndUpdate(updatedNote._id, {
         title: updatedNote.title,
         description: updatedNote.description,
-      })
+      });
       emitNotes();
     });
 
-    socket.on('chat:message', (data) =>{
-      io.emit('chat:message', data)
-    })
+    socket.on("chat:message", (data) => {
+      data.id = socket.id;
+      io.emit("chat:message", data);
+    });
 
-    socket.on('chat:typing', (data) =>{
-      socket.broadcast.emit('chat:typing', data)
-    })
+    socket.on("chat:typing", (data) => {
+      socket.broadcast.emit("chat:typing", data);
+    });
+
+    socket.on("chat:obtenerid", (data) => {
+      socket.emit("chat:getid", socket.id)
+    });
   });
 };

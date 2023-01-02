@@ -24,11 +24,12 @@
         <div id="output"></div>
         <div id="actions"></div>
       </div>
-      <input type="text" id="username" placeholder="Username" />
-      <input type="text" id="message" placeholder="Message" />
+      <div>
+      <input type="text" id="message" placeholder="Message" class="form">
       <button type="button" class="btn btn-primary" id="send">
         Send message
       </button>
+    </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="./chat.js" type="module"></script>
