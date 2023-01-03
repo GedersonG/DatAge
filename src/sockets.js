@@ -1,4 +1,5 @@
 import Note from "./models/Note";
+import Message from "./models/Message";
 
 export default (io) => {
   io.on("connection", (socket) => {
@@ -10,8 +11,16 @@ export default (io) => {
     };
     emitNotes();
 
+    const emitMessages = async () => {
+      const messages = await Message.find();
+      socket.emit("server:loadmessages", messages);
+    };
+    emitMessages();
+
     socket.on("client:newnote", async (data) => {
+      console.log("Data is --> ", data);
       const newData = new Note(data);
+      console.log("NewData is --> ", newData);
       /*
       También sirve -->
       const newData = new Note({
@@ -28,6 +37,11 @@ export default (io) => {
       emitNotes();
     });
 
+    socket.on("chat:delete", async () =>{
+      await Message.deleteMany();
+      io.emit("server:deleteNote")
+    })
+
     socket.on("client:getNote", async (id) => {
       const note = await Note.findById(id);
       io.emit("server:noteselected", note);
@@ -41,9 +55,13 @@ export default (io) => {
       emitNotes();
     });
 
-    socket.on("chat:message", (data) => {
-      data.id = socket.id;
-      io.emit("chat:message", data);
+    socket.on("chat:message", async (data) => {
+      const newMessage = new Message(data);
+      const savedMessage = await newMessage.save();
+      io.emit("chat:message", {
+        savedMessage,
+        id: socket.id
+      });
     });
 
     socket.on("chat:typing", (data) => {
@@ -51,7 +69,7 @@ export default (io) => {
     });
 
     socket.on("chat:obtenerid", (data) => {
-      socket.emit("chat:getid", socket.id)
+      socket.emit("chat:getid", socket.id);
     });
   });
 };
