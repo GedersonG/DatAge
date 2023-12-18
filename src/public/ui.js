@@ -12,10 +12,14 @@ const noteUI = (note) => {
   <div class="card card-title rounded-0 animate__animated animate__fadeInUp">
     <h3>${note.title}</h3>
     <div class="d card-body justify-content-between mb-2">
-        <button class="btn btn-danger btn-sm delete" data-id="${note._id}">Delete</button>
-        <button class="btn btn-secondary btn-sm update" data-id="${note._id}">Update</button>
+    <p>${note.description}</p>    
     </div>
-    <p>${note.description}</p>
+    <div class="btns-container">
+    <button class="btn btn-danger btn-sm delete" data-id="${note._id}">Delete</button>
+    <button class="btn btn-secondary btn-sm update" data-id="${note._id}">Update</button>
+    </div>
+    
+    
   </div>
 `;
 

@@ -9,9 +9,17 @@ let btnDelete = document.getElementById("delete");
 let output = document.getElementById("output");
 let actions = document.getElementById("actions");
 let container = document.getElementById("#chat-window");
+let form = document.getElementById("#chatform");
+
+
 
 const messageUI = (messages) => {
-  const p = document.createElement("p");
+  const p = document.createElement("div");
+  const {username} = JSON.parse(localStorage.getItem("user"))
+
+  console.log("data: ",username)  
+  const classname = messages.username == username ? "mymsg" : "otheruser"
+  p.classList.add(classname)
   p.innerHTML = `<p class="animate__animated animate__fadeIn">
     <strong>${messages.username}: </strong> ${messages.message}
     </p>`;
@@ -23,7 +31,8 @@ socket.on("server:loadmessages", function (messages) {
   messages.forEach((message) => output.append(messageUI(message)));
 });
 
-btnSend.addEventListener("click", function () {
+btnSend.addEventListener("click", function (e) {
+  e.preventDefault()
   socket.emit("chat:message", {
     message: message.value,
     username: username,
@@ -49,8 +58,12 @@ socket.on("chat:getid", function (data) {
 });
 
 socket.on("chat:message", function (data) {
+  console.log("msg: ",JSON.stringify(data))
   actions.innerHTML = "";
-  output.innerHTML += `<p class="animate__animated animate__fadeIn">
+  const {username} = JSON.parse(localStorage.getItem("user"))
+
+  const classname = data.savedMessage.username == username ? "mymsg" : "otheruser"
+  output.innerHTML += `<p class="${classname} animate__animated animate__fadeIn">
     <strong>${data.savedMessage.username}: </strong> ${data.savedMessage.message}
     </p>`;
   if (data.id == myID) {
@@ -61,3 +74,7 @@ socket.on("chat:message", function (data) {
 socket.on("chat:typing", function (data) {
   actions.innerHTML = `<p><em>${data} is typing a message...</em></p>`;
 });
+
+form.addEventListener("submit", (event) => { 
+  event.preventDefault()
+})
